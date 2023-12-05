@@ -7,7 +7,7 @@ const App = () => {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<LandingPage />} />
-        <Route path="/campaign" element={<CampaignPage />} />
+        <Route path="/campaign/:user_id" element={<CampaignPage />} />
         <Route path="/campaign/result" element={<ResultPage />} />
         {/* <Route path="*" element={<NoPage />} /> */}
       </Routes>

@@ -7,6 +7,7 @@ const ImageTool = (props) => {
   const [image, setImage] = useState("");
   const [currentPage, setCurrentPage] = useState("choose-img");
   const [imgAfterCrop, setImgAfterCrop] = useState("");
+  const [result, setResult] = useState({});
   // Invoked when new image file is selected
   const onImageSelected = (selectedImg) => {
     setImage(selectedImg);
@@ -51,26 +52,46 @@ const ImageTool = (props) => {
 
   // Function to send cropped image to the backend
   const sendCroppedImageToBackend = () => {
-    fetch("http://127.0.0.1:5000/create/h76hJjTMX2UOeBaxFPew", {
+    fetch(`http://127.0.0.1:5000/campaign/${props.id}/download`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
       },
       body: JSON.stringify({ croppedImage: imgAfterCrop }), // Send cropped image data
     })
       .then((response) => {
-        // Handle response from the backend
         if (response.ok) {
-          // Perform actions based on a successful response
+          return response.json(); // Parse response JSON
         } else {
           throw new Error("Failed to send cropped image to the backend");
         }
+      })
+      .then((data) => {
+        // Handle the parsed response data
+        setResult(data); // Set the result using the parsed data
+        console.log(data); // Log the response data
       })
       .catch((error) => {
         // Handle errors
         console.error("Error sending cropped image:", error);
       });
   };
+
+  //   const { user_id } = useParams();
+  //   const [data, setData] = useState(null);
+
+  //   useEffect(() => {
+  //     const fetchData = async () => {
+  //       const result = await axios(
+  //         `http://localhost:5000/campaign/${user_id}/download`
+  //       );
+  //       console.log(result.data);
+  //       setData(result.data);
+  //     };
+  //     fetchData();
+  //   }, [user_id]);
+  // };
 
   if (!props.visible) {
     return null;
@@ -110,7 +131,6 @@ const ImageTool = (props) => {
               <div>
                 <img src={imgAfterCrop} className="cropped-img" />
               </div>
-
               <button
                 onClick={() => {
                   setCurrentPage("crop-img");
@@ -119,7 +139,6 @@ const ImageTool = (props) => {
               >
                 Crop
               </button>
-
               <button
                 onClick={() => {
                   setCurrentPage("choose-img");
@@ -132,6 +151,7 @@ const ImageTool = (props) => {
               <button className="btn" onClick={sendCroppedImageToBackend}>
                 Done
               </button>
+              <img src={result} alt="Result Image" />
             </div>
           )}
         </div>
