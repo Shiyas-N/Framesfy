@@ -6,8 +6,8 @@ import ImageCropper from "./ImageCropper";
 const ImageTool = (props) => {
   const [image, setImage] = useState("");
   const [currentPage, setCurrentPage] = useState("choose-img");
-  const [imgAfterCrop, setImgAfterCrop] = useState("");
-  const [result, setResult] = useState({});
+  // const [imgAfterCrop, setImgAfterCrop] = useState("");
+  // const [result, setResult] = useState({});
   // Invoked when new image file is selected
   const onImageSelected = (selectedImg) => {
     setImage(selectedImg);
@@ -39,7 +39,7 @@ const ImageTool = (props) => {
 
       const dataURL = canvasEle.toDataURL("image/jpeg");
 
-      setImgAfterCrop(dataURL);
+      props.setImgAfterCrop(dataURL);
       setCurrentPage("img-cropped");
     };
   };
@@ -51,46 +51,31 @@ const ImageTool = (props) => {
   };
 
   // Function to send cropped image to the backend
-  const sendCroppedImageToBackend = () => {
-    fetch(`http://127.0.0.1:5000/campaign/${props.id}/download`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
-      body: JSON.stringify({ croppedImage: imgAfterCrop }), // Send cropped image data
-    })
-      .then((response) => {
-        if (response.ok) {
-          return response.json(); // Parse response JSON
-        } else {
-          throw new Error("Failed to send cropped image to the backend");
-        }
-      })
-      .then((data) => {
-        // Handle the parsed response data
-        setResult(data); // Set the result using the parsed data
-        console.log(data); // Log the response data
-      })
-      .catch((error) => {
-        // Handle errors
-        console.error("Error sending cropped image:", error);
-      });
-  };
-
-  //   const { user_id } = useParams();
-  //   const [data, setData] = useState(null);
-
-  //   useEffect(() => {
-  //     const fetchData = async () => {
-  //       const result = await axios(
-  //         `http://localhost:5000/campaign/${user_id}/download`
-  //       );
-  //       console.log(result.data);
-  //       setData(result.data);
-  //     };
-  //     fetchData();
-  //   }, [user_id]);
+  // const sendCroppedImageToBackend = () => {
+  //   fetch(`http://127.0.0.1:5000/campaign/${props.id}/download`, {
+  //     method: "POST",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //       "Access-Control-Allow-Origin": "*",
+  //     },
+  //     body: JSON.stringify({ croppedImage: props.imgAfterCrop }), // Send cropped image data
+  //   })
+  //     .then((response) => {
+  //       if (response.ok) {
+  //         return response.json(); // Parse response JSON
+  //       } else {
+  //         throw new Error("Failed to send cropped image to the backend");
+  //       }
+  //     })
+  //     .then((data) => {
+  //       // Handle the parsed response data
+  //       setResult(data); // Set the result using the parsed data
+  //       console.log(data); // Log the response data
+  //     })
+  //     .catch((error) => {
+  //       // Handle errors
+  //       console.error("Error sending cropped image:", error);
+  //     });
   // };
 
   if (!props.visible) {
@@ -116,7 +101,6 @@ const ImageTool = (props) => {
             />
           </svg>
         </button>
-        {/* <h1>Upload Image</h1> */}
         <div className="container">
           {currentPage === "choose-img" ? (
             <FileInput setImage={setImage} onImageSelected={onImageSelected} />
@@ -129,7 +113,7 @@ const ImageTool = (props) => {
           ) : (
             <div>
               <div>
-                <img src={imgAfterCrop} className="cropped-img" />
+                <img src={props.imgAfterCrop} className="cropped-img" />
               </div>
               <button
                 onClick={() => {
@@ -148,10 +132,10 @@ const ImageTool = (props) => {
               >
                 New Image
               </button>
-              <button className="btn" onClick={sendCroppedImageToBackend}>
+              {/* <button className="btn" onClick={sendCroppedImageToBackend}>
                 Done
-              </button>
-              <img src={result} alt="Result Image" />
+              </button> */}
+              {/* <img src={result} alt="Result Image" /> */}
             </div>
           )}
         </div>
