@@ -8,6 +8,7 @@ const CampaignPage = () => {
   const [data, setData] = useState(null);
   const [textValue, setTextValue] = useState("");
   const [imgAfterCrop, setImgAfterCrop] = useState("");
+  const [resultImage, setResultImage] = useState("");
   // const [croppedImage, setCroppedImage] = useState(null);
 
   const { user_id } = useParams();
@@ -18,67 +19,90 @@ const CampaignPage = () => {
 
   const handleImageChange = (event) => {
     const selectedImageFile = event.target.files[0];
-    setImgAfterCrop(selectedImageFile);
-    // Show the cropper component passing selectedImageFile
-    // Set cropped image in state after cropping is done
+
+    if (selectedImageFile) {
+      const reader = new FileReader();
+      reader.readAsDataURL(selectedImageFile);
+
+      reader.onloadend = () => {
+        if (
+          typeof reader.result === "string" &&
+          reader.result.startsWith("data:image")
+        ) {
+          setImgAfterCrop(reader.result); // Set the Base64-encoded image
+          // console.log(imgAfterCrop);
+        } else {
+          console.error("Invalid image format or could not read the file.");
+          // Handle the error accordingly if the image data URL is invalid
+        }
+      };
+    }
   };
 
   function toggleShow() {
     setShowModel((prevState) => !prevState);
   }
 
-  const handleFormSubmit = (event) => {
+  const handleFormSubmit = async (event) => {
     event.preventDefault();
 
     // Create FormData object
     const formData = new FormData();
-    function dataURItoBlob(dataURI) {
+    // Function to convert dataURI to Blob
+    const dataURItoBlob = (dataURI) => {
+      // if (!dataURI) {
+      //   return null;
+      // }
+
+      // Split the data URI to get the data part
       const byteString = atob(dataURI.split(",")[1]);
-      const mimeString = dataURI.split(",")[0].split(":")[1].split(";")[0];
+      // Get the MIME type of the data
+      const mimeType = dataURI.split(",")[0].split(":")[1].split(";")[0];
+
+      // Create an ArrayBuffer and Uint8Array for the byte string
       const ab = new ArrayBuffer(byteString.length);
       const ia = new Uint8Array(ab);
 
+      // Set the byte values into the ArrayBuffer
       for (let i = 0; i < byteString.length; i++) {
         ia[i] = byteString.charCodeAt(i);
       }
 
-      return new Blob([ab], { type: mimeString });
-    }
+      // Create a Blob from ArrayBuffer
+      return new Blob([ab], { type: mimeType });
+    };
 
     formData.append("textData", textValue);
-    formData.append("imageData", dataURItoBlob(imgAfterCrop));
+    const blobObject = dataURItoBlob(imgAfterCrop);
+    console.log(blobObject);
+    formData.append("croppedImage", blobObject);
 
     // Send formData to backend using fetch or your preferred method
-    fetch(`http://127.0.0.1:5000/campaign/${user_id}/download`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
-      body: formData, // Send cropped image data
-    })
-      .then((response) => {
-        if (response.ok) {
-          return response.json(); // Parse response JSON
-        } else {
-          throw new Error("Failed to send cropped image to the backend");
+    try {
+      const response = await fetch(
+        `http://127.0.0.1:5000/campaign/${user_id}/download`,
+        {
+          method: "POST",
+          body: formData,
         }
-      })
-      .then((data) => {
-        // Handle the parsed response data
-        // setResult(data); // Set the result using the parsed data
-        console.log(data); // Log the response data
-      })
-      .catch((error) => {
-        // Handle errors
-        console.error("Error sending cropped image:", error);
-      });
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to send cropped image to the backend");
+      }
+
+      const data = await response.json();
+      console.log(data);
+      const resultant = dataURItoBlob(data);
+      setResultImage(resultant); // Save the received base64 image data
+    } catch (error) {
+      console.error("Error sending cropped image:", error);
+    }
   };
 
   useEffect(() => {
     const fetchData = async () => {
       const result = await axios(`http://localhost:5000/campaign/${user_id}`);
-      console.log(result.data);
       setData(result.data);
     };
     fetchData();
@@ -130,6 +154,7 @@ const CampaignPage = () => {
             setImgAfterCrop={setImgAfterCrop}
           />
           <button type="submit">Submit</button>
+          <img src={resultImage} alt="Result" />
         </form>
       </div>
     </div>
