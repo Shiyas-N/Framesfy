@@ -59,6 +59,7 @@ const ImageTool = (props) => {
             image={image}
             onCropDone={onCropDone}
             onCropCancel={onCropCancel}
+            aspect_ratio={props.aspect_ratio}
           />
         ) : (
           <div className="flex-column items-center">

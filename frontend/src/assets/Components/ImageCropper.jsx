@@ -2,7 +2,7 @@
 import { useState } from "react";
 import Cropper from "react-easy-crop";
 
-function ImageCropper({ image, onCropDone, onCropCancel }) {
+function ImageCropper({ image, onCropDone, onCropCancel, aspect_ratio }) {
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedArea, setCroppedArea] = useState(null);
@@ -16,7 +16,7 @@ function ImageCropper({ image, onCropDone, onCropCancel }) {
       <div>
         <Cropper
           image={image}
-          aspect={1 / 1}
+          aspect={aspect_ratio}
           crop={crop}
           zoom={zoom}
           onCropChange={setCrop}

@@ -144,6 +144,7 @@ const CampaignPage = () => {
                   id={user_id}
                   imgAfterCrop={imgAfterCrop}
                   setImgAfterCrop={setImgAfterCrop}
+                  aspect_ratio={data.aspect_ratio}
                 />
                 <button
                   type="submit"
