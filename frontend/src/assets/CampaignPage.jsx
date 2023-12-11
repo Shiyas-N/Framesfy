@@ -109,13 +109,13 @@ const CampaignPage = () => {
     document.body.removeChild(downloadLink);
   };
 
-  const shareViaWhatsApp = (imageUrl, imageName) => {
-    // Construct the WhatsApp share URL
-    const shareURL = `whatsapp://send?text=Check out this image: ${imageName}%0A${imageUrl}`;
+  // const shareViaWhatsApp = (imageUrl, imageName) => {
+  //   // Construct the WhatsApp share URL
+  //   const shareURL = `whatsapp://send?text=Check out this image: ${imageName}%0A${imageUrl}`;
 
-    // Open the WhatsApp share URL
-    window.open(shareURL);
-  };
+  //   // Open the WhatsApp share URL
+  //   window.open(shareURL);
+  // };
 
   const refreshPage = () => {
     window.location.reload();
@@ -127,9 +127,9 @@ const CampaignPage = () => {
       {loading ? (
         <LoadingComponent />
       ) : (
-        <div className="w-full h-screen bg-gray-600 p-5">
+        <div className="w-full h-screen bg-gray-500 p-5 flex item-center justify-center">
           {!resultImage ? (
-            <div className="bg-white p-10 flex-column justify-center rounded">
+            <div className="absolute bg-white mt-10 p-10 flex-column justify-center h-fit rounded md:w-1/2 lg:w-1/3">
               <img src={data.frame_image} alt="Template" />
               <h1 className="text-3xl">{data.client_title}</h1>
               <p>
@@ -160,21 +160,21 @@ const CampaignPage = () => {
                   text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 
                   focus:ring-blue-300 font-medium rounded-full
                   text-sm px-5 py-2.5 text-center me-2 mb-2 
-                  dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                  dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 lg:ml-[10.7rem]"
                 >
                   Submit
                 </button>
               </form>
             </div>
           ) : (
-            <div className="bg-white p-10 flex-column justify-center rounded">
+            <div className="bg-white p-10 flex-column justify-center rounded md:w-1/2 lg:w-1/3 md:h-screen">
               <img src={resultImage} alt="" />
               <button onClick={() => downloadImage(resultImage)}>
                 Download
               </button>
-              <button onClick={() => shareViaWhatsApp(resultImage, "Poster")}>
+              {/* <button onClick={() => shareViaWhatsApp(resultImage, "Poster")}>
                 Share Through Whatsapp
-              </button>
+              </button> */}
               <button onClick={refreshPage}> New</button>
             </div>
           )}
