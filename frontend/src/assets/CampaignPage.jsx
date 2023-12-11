@@ -109,6 +109,14 @@ const CampaignPage = () => {
     document.body.removeChild(downloadLink);
   };
 
+  const shareViaWhatsApp = (imageUrl, imageName) => {
+    // Construct the WhatsApp share URL
+    const shareURL = `whatsapp://send?text=Check out this image: ${imageName}%0A${imageUrl}`;
+
+    // Open the WhatsApp share URL
+    window.open(shareURL);
+  };
+
   const refreshPage = () => {
     window.location.reload();
   };
@@ -144,6 +152,7 @@ const CampaignPage = () => {
                   id={user_id}
                   imgAfterCrop={imgAfterCrop}
                   setImgAfterCrop={setImgAfterCrop}
+                  aspect_ratio={data.aspect_ratio}
                 />
                 <button
                   type="submit"
@@ -162,6 +171,9 @@ const CampaignPage = () => {
               <img src={resultImage} alt="" />
               <button onClick={() => downloadImage(resultImage)}>
                 Download
+              </button>
+              <button onClick={() => shareViaWhatsApp(resultImage, "Poster")}>
+                Share Through Whatsapp
               </button>
               <button onClick={refreshPage}> New</button>
             </div>

@@ -1,12 +1,15 @@
 /* eslint-disable react/prop-types */
 import { useRef } from "react";
 
-function FileInput({ onImageSelected }) {
+function FileInput({ onImageSelected, imageName }) {
   const inputRef = useRef();
 
   const handleOnChange = (event) => {
     if (event.target.files && event.target.files.length > 0) {
       const reader = new FileReader();
+
+      imageName(event.target.files[0].name);
+
       reader.readAsDataURL(event.target.files[0]);
       reader.onload = function () {
         onImageSelected(reader.result);
