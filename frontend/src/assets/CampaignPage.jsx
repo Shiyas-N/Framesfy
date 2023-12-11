@@ -119,9 +119,9 @@ const CampaignPage = () => {
       {loading ? (
         <LoadingComponent />
       ) : (
-        <div className="w-full h-screen bg-gray-600 flex justify-center items-center px-20 py-10 rounded">
+        <div className="w-full h-screen bg-gray-600 p-5">
           {!resultImage ? (
-            <div className="bg-white h-full w-96 p-10 flex-column justify-center">
+            <div className="bg-white p-10 flex-column justify-center rounded">
               <img src={data.frame_image} alt="Template" />
               <h1 className="text-3xl">{data.client_title}</h1>
               <p>
@@ -133,7 +133,7 @@ const CampaignPage = () => {
                   type="text"
                   value={textValue}
                   onChange={handleTextChange}
-                  placeholder="Name"
+                  placeholder="Text"
                   className="rounded block border-2 w-full mt-10 bg-transparent justify-self-center py-1.5 pl-1 text-gray-900 
                   placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6 text-center placeholder-center"
                   required
@@ -147,7 +147,7 @@ const CampaignPage = () => {
                 />
                 <button
                   type="submit"
-                  className="ml-25
+                  className="ml-24 mt-10
                   text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 
                   focus:ring-blue-300 font-medium rounded-full
                   text-sm px-5 py-2.5 text-center me-2 mb-2 
@@ -158,7 +158,7 @@ const CampaignPage = () => {
               </form>
             </div>
           ) : (
-            <div className="bg-white h-full w-96 p-10 flex-column justify-center">
+            <div className="bg-white p-10 flex-column justify-center rounded">
               <img src={resultImage} alt="" />
               <button onClick={() => downloadImage(resultImage)}>
                 Download

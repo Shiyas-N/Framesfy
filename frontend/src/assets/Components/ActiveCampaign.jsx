@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
 const ActiveCampaign = () => {
   return (
-    <div className="mt-20">
-      <h1 className="ml-40 text-3xl font-medium">Active Campaign</h1>
+    <div className="">
+      <h1 className="text-3xl p-10 font-medium">Active Campaign</h1>
       {/* <div className="bg-gray-400 aspect-square w-48"></div> */}
       <div className="flex overflow-x-scroll pb-10 hide-scroll-bar mt-10">
         <div className="flex flex-nowrap lg:ml-40 md:ml-20 ml-10 ">
