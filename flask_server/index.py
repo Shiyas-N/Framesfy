@@ -9,6 +9,7 @@ cred = credentials.Certificate("key.json")
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
+
 app = Flask(__name__)
 CORS(app,resources={r"/campaign/*": {"origins": "*"}},methods=['POST'],allow_headers=["Access-Control-Allow-Origin"],origins="*")
 
@@ -27,7 +28,7 @@ def index():
     # else:
     #     return f"No user found with ID: {user_id}", 404
 
-def create(user_id):
+def campaign(user_id):
     users_ref = db.collection('users').document(user_id)
     user = users_ref.get()
     if user.exists:
@@ -37,14 +38,14 @@ def create(user_id):
         # for doc in docs:
         #     user_data.append(doc.to_dict())
         user_data = user.to_dict()
-        frame_image_url=user_data['user_image']
-        print(frame_image_url)
-        response = requests.get(frame_image_url)
-        frame_image_data = response.content
-        frame_image_np = np.frombuffer(frame_image_data, np.uint8)
-        frame_image = cv2.imdecode(frame_image_np, cv2.IMREAD_COLOR)
+        display_frame_url=user_data['display_frame']
+        edit_frame_url=user_data['edit_frame']
+        response = requests.get(edit_frame_url)
+        edit_frame_data = response.content
+        edit_frame_np = np.frombuffer(edit_frame_data, np.uint8)
+        edit_frame = cv2.imdecode(edit_frame_np, cv2.IMREAD_COLOR)
         client_title=user_data['user_title']
-        hsv = cv2.cvtColor(frame_image, cv2.COLOR_BGR2HSV)
+        hsv = cv2.cvtColor(edit_frame, cv2.COLOR_BGR2HSV)
 
                 # Define range for yellow color in HSV
         lower_yellow = np.array([10, 100, 100])
@@ -73,11 +74,11 @@ def create(user_id):
         # return render_template("campaign.html",user_image=frame_image,user_title=client_title,user_id=user_id)
         return jsonify({
             "user_id": user_id,
-            "frame_image": frame_image_url,
+            "frame_image": display_frame_url,
             "client_title": client_title,
             "aspect_ratio":aspect_ratio_yellow
         })
-    return jsonify(frame_image="")
+    return jsonify(frame_image="Error")
     
 @app.route('/campaign/<string:user_id>/download',methods=['POST'])
 
@@ -86,11 +87,11 @@ def image_rendering(user_id):
     user = users_ref.get()
     if user.exists:
         user_data = user.to_dict()
-        frame_image_url = user_data['user_image']
-        response = requests.get(frame_image_url)
-        frame_image_data = response.content
-        frame_image_np = np.frombuffer(frame_image_data, np.uint8)
-        frame_image = cv2.imdecode(frame_image_np, cv2.IMREAD_COLOR)
+        edit_frame_url = user_data['edit_frame']
+        response = requests.get(edit_frame_url)
+        edit_frame_data = response.content
+        edit_frame_np = np.frombuffer(edit_frame_data, np.uint8)
+        edit_frame = cv2.imdecode(edit_frame_np, cv2.IMREAD_COLOR)
 
         # img = cv2.imdecode(np.frombuffer(cropped_image.read(), np.uint8), cv2.IMREAD_COLOR)
         text_data = (request.form.get('textData'))
@@ -117,15 +118,12 @@ def image_rendering(user_id):
                 
                 # Fetch and process the frame image
             # response = requests.get(frame_image)
-            if response.status_code == 200:
-                with open('img2', 'wb') as file:
-                    file.write(response.content)
             # frame_image=cv2.imread("post.jpg")
 
                 # Load the frame_image and the image to be placed in the frame
 
                 # Convert the frame_image to HSV color space
-            hsv = cv2.cvtColor(frame_image, cv2.COLOR_BGR2HSV)
+            hsv = cv2.cvtColor(edit_frame, cv2.COLOR_BGR2HSV)
 
                 # Define range for yellow color in HSV
             lower_yellow = np.array([10, 100, 100])
@@ -163,14 +161,14 @@ def image_rendering(user_id):
             new_image_resized = cv2.resize(new_image, (int(new_w), int(new_h)))
 
                 # Create a mask of the resized new image with the contour mask
-            new_image_mask = np.zeros_like(frame_image)
+            new_image_mask = np.zeros_like(edit_frame)
             new_image_mask[y:y + new_image_resized.shape[0], x:x + new_image_resized.shape[1]] = new_image_resized
 
                 # Apply the contour mask to the new image mask
             new_image_mask = cv2.bitwise_and(new_image_mask, new_image_mask, mask=contour_mask)
 
                 # Create an inverse mask of the frame_image
-            poster_mask = cv2.bitwise_and(frame_image, frame_image, mask=cv2.bitwise_not(contour_mask))
+            poster_mask = cv2.bitwise_and(edit_frame, edit_frame, mask=cv2.bitwise_not(contour_mask))
 
                 # Combine the new image with the frame_image
             result = cv2.add(poster_mask, new_image_mask)
@@ -186,8 +184,6 @@ def image_rendering(user_id):
             center_x = int(x + (new_w - text_size[0]) / 2)
 
             cv2.putText(result, text_data, (center_x, int(y + new_h + 30)), font, font_scale, font_color, line_type)
-                            # Save the result
-            cv2.imwrite('result.jpg', result)
             #     return jsonify({'image_url': merged_image_url})
             
 
